@@ -1,45 +1,64 @@
-$(function() {
+$(function () {
 
 
 
+    // Initialize Firebase
     var config = {
-        apiKey: "AIzaSyA85l8B-AKnOiRKtdSzY5iP-XtynZnHU5Q",
-        authDomain: "test-b6c38.firebaseapp.com",
-        databaseURL: "https://test-b6c38.firebaseio.com",
-        projectId: "test-b6c38",
-        storageBucket: "test-b6c38.appspot.com",
-        messagingSenderId: "9218918367"
-      };
-      firebase.initializeApp(config);
+        apiKey: "AIzaSyD3Ax76YqmjJii-sZcTpolidVB-VleH58k",
+        authDomain: "train-database-eadf6.firebaseapp.com",
+        databaseURL: "https://train-database-eadf6.firebaseio.com",
+        projectId: "train-database-eadf6",
+        storageBucket: "",
+        messagingSenderId: "430166995585"
+    };
 
-      var database = firebase.database();
+    firebase.initializeApp(config);
 
-      $('.btn').on('click', function() {
-          event.preventDefault();
-         
-          var newTrain = {
-              name: $('.train').val().trim(),
-              destination: $('.destination').val().trim(),
-              time: $('.time').val().trim(),
-              frequency: $('.frequency').val().trim()
-          };
+    var database = firebase.database();
 
-          database.ref('new_train').push(newTrain)
-          console.log('Checking new object' + newTrain)
-          console.log('this is button')
-      })
 
-      database.ref('new_train').on('child_added', function(childSnapshot) {
-          console.log('This is CHILD ADDED', childSnapshot.val())
-          
-        var currentTime = moment().format("HH:mm")
+    var pushToBase = () => {
+        //creating objext to send to database
+        var newTrain = {
+            name: $('.train').val().trim(),
+            destination: $('.destination').val().trim(),
+            time: moment($('.time').val().trim(), 'HH:mm').subtract(1, 'years').format('X'),
+            frequency: $('.frequency').val().trim()
+        }
+        //sending to database
+        database.ref('new_train').push(newTrain);
+        //gotta console log you know
+        console.log('Checking new object', newTrain);
+        console.log('this is button');
+    }
+    //reseting input fields(I know the name didn't give that a way)
+    var resetFields = () => {
+        $('.train').val("");
+        $('.destination').val("");
+        $('.time').val("");
+        $('.frequency').val("");
+    }
 
-        console.log(currentTime)
-          $('.body').append(
-              `<tr><td class='nameDisplay'>${childSnapshot.val().name}</td>
+
+    $('.submit').on('click', function () {
+        event.preventDefault();
+        pushToBase();
+        resetFields();
+    })
+
+    database.ref('new_train').on('child_added', function (childSnapshot) {
+        console.log('This is CHILD ADDED', childSnapshot.val());
+
+        $('.body').append(
+            `<tr><td class='nameDisplay'>${childSnapshot.val().name}</td>
               <td class='destDisplay'>${childSnapshot.val().destination}</td>
-              <td class='timeDisplay'>${childSnapshot.val().time}</td>
-              <td class='freqDisplay'>${childSnapshot.val().frequency}</td></tr>`
-          )
-      })
-})
+              <td class='freqDisplay'>${childSnapshot.val().frequency}</td>
+              <td class='timeDisplay'>${childSnapshot.val().time}</td></tr>`
+        )
+
+
+    });
+
+    $('.parallax').parallax();
+
+});

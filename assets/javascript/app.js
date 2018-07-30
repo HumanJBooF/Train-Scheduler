@@ -1,5 +1,5 @@
 $(function () {
-
+   
     // Initialize Firebase
     var config = {
         apiKey: "AIzaSyD3Ax76YqmjJii-sZcTpolidVB-VleH58k",
@@ -71,7 +71,7 @@ $(function () {
               <td>${freq}</td>
               <td>${displayNext}</td>
               <td>${minutesTillTrain}</td>
-              <td><a class="remove waves-effect waves-light btn-small"><i class="material-icons">remove</i></a></td>
+              <td><a class="remove waves-effect waves-light deep-orange darken-4 btn"><i class="material-icons">remove_circle_outline</i></a></td>
              </tr>`
         );
 
@@ -97,9 +97,14 @@ $(function () {
         firebase.auth().signInWithPopup(provider).then(function (result) {
             var token = result.credential.accessToken;
             var user = result.user;
-
-            console.log(token)
-            console.log(user)
+            if (user) {
+                $('signin').hide()
+                console.log(token)
+                console.log(user)
+            } else {
+                console.log('no one signed in')
+            }
+           
         }).catch(function (error) {
             var errorCode = error.code;
             var errorMessage = error.message;

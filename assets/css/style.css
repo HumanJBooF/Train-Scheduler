@@ -11,12 +11,8 @@ table.striped > tbody > tr:nth-child(odd) {
     background-color: rgba(255, 181, 145, 0.5);
   }
   
-  #form, .card {
-      border: 1pt solid;
-  }
-
-  table {
-      border: 1pt solid;
+  #form, .card, table, .signin {
+      border: 2pt solid;
   }
 
   

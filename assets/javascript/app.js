@@ -1,5 +1,6 @@
 $(function () {
-   
+
+    $('.card').hide()
     // Initialize Firebase
     var config = {
         apiKey: "AIzaSyD3Ax76YqmjJii-sZcTpolidVB-VleH58k",
@@ -14,20 +15,35 @@ $(function () {
     var database = firebase.database();
 
     var pushToBase = () => {
+        var trainName = $('.train').val().trim();
+        var destination = $('.destination').val().trim();
+        var firstTrain = $('.time').val().trim();
+        var freq = $('.frequency').val().trim();
         //creating objext to send to database
         var newTrain = {
-            name: $('.train').val().trim(),
-            destination: $('.destination').val().trim(),
-            time: $('.time').val().trim(),
-            frequency: $('.frequency').val().trim(),
+            name: trainName,
+            destination: destination,
+            time: firstTrain,
+            frequency: freq,
             dateAdded: firebase.database.ServerValue.TIMESTAMP
-        };
+        }
+        //checking to make sure all form fields and filled
+        if (trainName === "" || destination === "" || firstTrain === "" || freq === "") {
+            $( ".card" ).fadeIn("fast");
 
-        //sending to database
+            setTimeout(function(){ 
+                $(".card").fadeOut("slow", function() {
+                });
+            }, 5000);
+            return false;
+        } else {
+               //sending to database
         database.ref('new_train').push(newTrain);
         //gotta console log you know
         // console.log('Checking new object', newTrain);
         // console.log('this is button');
+        }
+     
     };
 
     //reseting input fields(I know the name didn't give that a way)
@@ -49,6 +65,7 @@ $(function () {
         var destination = childSnapshot.val().destination;
         var freq = childSnapshot.val().frequency
         var firstTrainTime = childSnapshot.val().time
+        var key = childSnapshot.key
 
         var newFreq = parseInt(freq)
         // first train time going back in time like Marty McFly to come before the current time
@@ -71,10 +88,12 @@ $(function () {
               <td>${freq}</td>
               <td>${displayNext}</td>
               <td>${minutesTillTrain}</td>
-              <td><a class="remove waves-effect waves-light deep-orange darken-4 btn"><i class="material-icons">remove_circle_outline</i></a></td>
+              <td><a class="remove waves-effect waves-light deep-orange darken-4 btn" id="${key}"><i class="material-icons">remove_circle_outline</i></a></td>
              </tr>`
         );
 
+    }, function(error) {
+        console.log(`Uh I think you have yourself an error boy ${error}`);
     });
 
     //click me function and it like tottally calls some things you know
@@ -86,8 +105,10 @@ $(function () {
 
 
     $(document).on('click', '.remove', function () {
-        $(this).closest('tr').remove();
-        // To do, remove from database on click
+        var deleteKey = $(this).attr("id");
+        database.ref('new_train').child(deleteKey).remove();
+
+        location.reload();
     })
 
     //Almost working.... Sign in with google click event
@@ -97,14 +118,10 @@ $(function () {
         firebase.auth().signInWithPopup(provider).then(function (result) {
             var token = result.credential.accessToken;
             var user = result.user;
-            if (user) {
-                $('signin').hide()
+        
                 console.log(token)
                 console.log(user)
-            } else {
-                console.log('no one signed in')
-            }
-           
+
         }).catch(function (error) {
             var errorCode = error.code;
             var errorMessage = error.message;
@@ -115,10 +132,10 @@ $(function () {
 
     })
     //reloads page every minute to display accurate train times ... trying to find a better way to do this
-    setInterval(function () {
-        location.reload();
-    }, 60000)
-    
+    // setInterval(function () {
+    //     location.reload();
+    // }, 1000 * 60)
+
     //current Time
     displayTime()
     $('.parallax').parallax();

@@ -52,7 +52,7 @@ $(function () {
     };
 
     //display live time
-    function displayTime() {
+    var displayTime = () => {
         var time = moment().format('hh:mm:ss A');
         $('.nav-title').html(time);
         setTimeout(displayTime, 1000);

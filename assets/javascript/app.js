@@ -1,4 +1,4 @@
-$(function () {
+$(function() {
 
     $('.card').hide()
     // Initialize Firebase

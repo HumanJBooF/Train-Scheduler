@@ -111,7 +111,7 @@ $(function() {
         location.reload();
     })
 
-    //Almost working.... Sign in with google click event
+    //Sign in with google click event
     $('.signin').on('click', function () {
         console.log('click')
         let provider = new firebase.auth.GoogleAuthProvider();
